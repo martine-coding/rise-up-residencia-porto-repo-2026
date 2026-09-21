@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* Estilo do container grid */
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            /* 3 colunas iguais */
+            gap: 20px;
+            /* Espaçamento entre os itens */
+            max-width: 900px;
+            /* Largura máxima para melhor visualização */
+            margin: 20px auto;
+            /* Centraliza na página */
+            padding: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+        }
+
+        /* Estilo dos itens dentro do grid */
+        .item {
+            background-color: #4CAF50;
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            font-size: 18px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        /* Efeito hover nos itens */
+        .item:hover {
+            transform: scale(1.05);
+            background-color: #45a049;
+        }
+
+        /* Cores diferentes para cada coluna */
+        .item:nth-child(1) {
+            background-color: #FF6B6B;
+        }
+
+        .item:nth-child(2) {
+            background-color: #4ECDC4;
+        }
+
+        .item:nth-child(3) {
+            background-color: #45B7D1;
+        }
+
+        .item:nth-child(4) {
+            background-color: #96CEB4;
+        }
+
+        .item:nth-child(5) {
+            background-color: #FFEAA7;
+            color: #333;
+        }
+
+        .item:nth-child(6) {
+            background-color: #DDA0DD;
+        }
+
+        /* Título da página */
+        h2 {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>📐 Grid com 3 Colunas (1fr 1fr 1fr)</h2>
+    <p style="text-align:center; font-family:Arial; color:#666;">
+        Espaçamento entre os itens: <strong>20px</strong>
+    </p>
+
+    <div class="container">
+        <div class="item">📦 Item 1<br><small>Coluna 1</small></div>
+        <div class="item">📦 Item 2<br><small>Coluna 2</small></div>
+        <div class="item">📦 Item 3<br><small>Coluna 3</small></div>
+        <div class="item">📦 Item 4<br><small>Coluna 1</small></div>
+        <div class="item">📦 Item 5<br><small>Coluna 2</small></div>
+        <div class="item">📦 Item 6<br><small>Coluna 3</small></div>
+    </div>
+
+</body>
+
+</html>

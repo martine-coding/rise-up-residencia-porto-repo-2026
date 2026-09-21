@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* Container Grid */
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            /* 3 colunas - centro maior */
+            grid-template-rows: auto 200px;
+            /* 2 linhas - 2ª com altura fixa */
+            gap: 16px;
+            /* Espaçamento entre itens */
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 10px;
+            min-height: 500px;
+        }
+
+        /* Estilo dos itens */
+        .item {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.3s;
+        }
+
+        .item:hover {
+            transform: scale(1.02);
+        }
+
+        /* Destaque para a coluna do meio (2fr) */
+        .item:nth-child(2) {
+            background-color: #FF6B6B;
+        }
+
+        .item:nth-child(5) {
+            background-color: #FF6B6B;
+        }
+
+        /* Outras cores */
+        .item:nth-child(1) {
+            background-color: #4ECDC4;
+        }
+
+        .item:nth-child(3) {
+            background-color: #45B7D1;
+        }
+
+        .item:nth-child(4) {
+            background-color: #96CEB4;
+        }
+
+        .item:nth-child(6) {
+            background-color: #DDA0DD;
+        }
+
+        /* Informações da grid */
+        .info {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            margin: 20px auto;
+            max-width: 1000px;
+            padding: 15px;
+            background-color: #fff3cd;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .info code {
+            background-color: #f8f9fa;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .legenda {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .legenda span {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2 style="text-align:center; font-family:Arial;">📐 Grid: 3 Colunas × 2 Linhas</h2>
+
+    <div class="info">
+        <strong>Configuração:</strong><br>
+        <code>grid-template-columns: 1fr 2fr 1fr</code> → Coluna central <strong>2x maior</strong><br>
+        <code>grid-template-rows: auto 200px</code> → 1ª linha altura automática, 2ª linha com <strong>200px
+            fixos</strong><br>
+        <code>gap: 16px</code> → Espaçamento entre todos os itens
+        <div class="legenda">
+            <span style="background:#4ECDC4; color:white;">1fr</span>
+            <span style="background:#FF6B6B; color:white;">2fr (2x maior)</span>
+            <span style="background:#45B7D1; color:white;">1fr</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Linha 1 (auto) -->
+        <div class="item">📦 Item 1<br><small>1fr</small></div>
+        <div class="item">⭐ Item 2<br><small>2fr (maior)</small></div>
+        <div class="item">📦 Item 3<br><small>1fr</small></div>
+
+        <!-- Linha 2 (200px) -->
+        <div class="item">📦 Item 4<br><small>1fr</small></div>
+        <div class="item">⭐ Item 5<br><small>2fr (maior)</small></div>
+        <div class="item">📦 Item 6<br><small>1fr</small></div>
+    </div>
+
+    <!-- Visualização esquemática -->
+    <div
+        style="max-width:1000px; margin:20px auto; font-family:Arial; background:#e9ecef; padding:20px; border-radius:8px;">
+        <h3 style="text-align:center; margin-top:0;">📊 Estrutura Visual</h3>
+        <div style="display:grid; grid-template-columns:1fr 2fr 1fr; gap:8px; text-align:center; font-size:14px;">
+            <div style="background:#4ECDC4; padding:10px; border-radius:4px; color:white;">1fr<br><small>auto</small>
+            </div>
+            <div style="background:#FF6B6B; padding:10px; border-radius:4px; color:white;">2fr<br><small>auto</small>
+            </div>
+            <div style="background:#45B7D1; padding:10px; border-radius:4px; color:white;">1fr<br><small>auto</small>
+            </div>
+            <div style="background:#96CEB4; padding:10px; border-radius:4px; color:white;">1fr<br><small>200px</small>
+            </div>
+            <div style="background:#FF6B6B; padding:10px; border-radius:4px; color:white;">2fr<br><small>200px</small>
+            </div>
+            <div style="background:#DDA0DD; padding:10px; border-radius:4px; color:white;">1fr<br><small>200px</small>
+            </div>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:12px; color:#666;">
+            <span>← Linha 1: auto →</span>
+            <span>← Linha 2: 200px →</span>
+        </div>
+    </div>
+
+</body>
+
+</html>
