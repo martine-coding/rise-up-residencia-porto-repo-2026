@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aula 4 — Renderizando Dados Dinamicamente</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2d3748;
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 40px;
+            font-size: 18px;
+        }
+
+        .subtitle em {
+            color: #667eea;
+            font-style: normal;
+            font-weight: 600;
+        }
+
+        /* ============================================
+           SEÇÕES
+           ============================================ */
+        .section {
+            margin-bottom: 50px;
+            padding: 25px;
+            background: #f7fafc;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .section h2 {
+            color: #2d3748;
+            font-size: 22px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section h2 small {
+            font-size: 14px;
+            color: #718096;
+            font-weight: 400;
+        }
+
+        .section p {
+            color: #4a5568;
+            font-size: 15px;
+            margin-bottom: 12px;
+        }
+
+        /* ============================================
+           CONCEITO
+           ============================================ */
+        .conceito-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .conceito-card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s;
+        }
+
+        .conceito-card:hover {
+            border-color: #667eea;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
+        }
+
+        .conceito-card .icone {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .conceito-card h3 {
+            color: #2d3748;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .conceito-card p {
+            color: #718096;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        /* ============================================
+           CÓDIGO
+           ============================================ */
+        .code-block {
+            background: #1a202c;
+            color: #a0aec0;
+            padding: 16px 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 10px 0;
+            line-height: 1.7;
+        }
+
+        .code-block .keyword { color: #f472b6; }
+        .code-block .var { color: #63b3ed; }
+        .code-block .string { color: #68d391; }
+        .code-block .number { color: #f6ad55; }
+        .code-block .comment { color: #718096; }
+        .code-block .func { color: #fbbf24; }
+        .code-block .prop { color: #a78bfa; }
+        .code-block .tag { color: #fc8181; }
+        .code-block .attr { color: #f6ad55; }
+        .code-block .template { color: #fbbf24; }
+
+        /* ============================================
+           DEMO INTERATIVO
+           ============================================ */
+        .demo-box {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            border: 2px dashed #cbd5e0;
+            margin: 20px 0;
+        }
+
+        .demo-box h3 {
+            color: #2d3748;
+            margin-bottom: 16px;
+            font-size: 18px;
+        }
+
+        #lista-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .user-card {
+            background: white;
+            padding: 16px 20px;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .user-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
+        }
+
+        .user-card .nome {
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 15px;
+            margin-bottom: 6px;
+        }
+
+        .user-card .status {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-ativo {
+            background: #c6f6d5;
+            color: #276749;
+        }
+
+        .status-pendente {
+            background: #fef3c7;
+            color: #975a16;
+        }
+
+        .status-inativo {
+            background: #fed7d7;
+            color: #9b2c2c;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ============================================
+           TABELA DE USUÁRIOS
+           ============================================ */
+        .tabela-usuarios {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 16px;
+        }
+
+        .tabela-usuarios thead {
+            background: #2d3748;
+            color: white;
+        }
+
+        .tabela-usuarios th,
+        .tabela-usuarios td {
+            padding: 12px 16px;
+            text-align: left;
+        }
+
+        .tabela-usuarios tbody tr:nth-child(even) {
+            background: #f7fafc;
+        }
+
+        .tabela-usuarios tbody tr:hover {
+            background: #ebf8ff;
+        }
+
+        /* ============================================
+           DICA
+           ============================================ */
+        .dica {
+            background: #fef3c7;
+            border-left: 4px solid #f6ad55;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin: 16px 0;
+            font-size: 14px;
+            color: #744210;
+        }
+
+        .dica strong {
+            color: #975a16;
+        }
+
+        .dica code {
+            background: rgba(0,0,0,0.08);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        /* ============================================
+           BOTÕES
+           ============================================ */
+        .botoes {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .btn-acao {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-acao:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .btn-acao:active {
+            transform: scale(0.98);
+        }
+
+        .btn-acao.verde {
+            background: #48bb78;
+        }
+
+        .btn-acao.verde:hover {
+            background: #38a169;
+        }
+
+        .btn-acao.vermelho {
+            background: #e53e3e;
+        }
+
+        .btn-acao.vermelho:hover {
+            background: #c53030;
+        }
+
+        /* ============================================
+           RESPONSIVO
+           ============================================ */
+        @media (max-width: 768px) {
+            .container { padding: 20px; }
+            h1 { font-size: 24px; }
+            .conceito-grid { grid-template-columns: 1fr; }
+            #lista-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🔄 Renderizando Dados Dinamicamente</h1>
+        <p class="subtitle">
+            "Em vez de escrever cada linha da tabela no HTML, usamos JS para <em>gerar o conteúdo</em> a partir de listas de dados."
+        </p>
+
+        <!-- ==========================================
+             SEÇÃO 1: CONCEITO
+             ========================================== -->
+        <div class="section">
+            <h2>💡 Por que renderizar dinamicamente?</h2>
+
+            <p>
+                Imagina que você tem 50 usuários para exibir. Escrever 50 blocos HTML à mão seria inviável
+                e impossível de manter. Com JavaScript, escrevemos <strong>um template</strong> e ele gera
+                todos os cards automaticamente a partir de um <strong>array de objetos</strong>.
+            </p>
+
+            <div class="conceito-grid">
+                <div class="conceito-card">
+                    <div class="icone">📋</div>
+                    <h3>Sem Renderização Dinâmica</h3>
+                    <p>Você escreve manualmente cada card no HTML. Se mudar de 3 para 50 usuários, reescreve tudo.</p>
+                </div>
+
+                <div class="conceito-card">
+                    <div class="icone">⚡</div>
+                    <h3>Com Renderização Dinâmica</h3>
+                    <p>Você escreve um template uma vez. O JS percorre o array e gera todos os cards automaticamente.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SEÇÃO 2: O ARRAY DE OBJETOS
+             ========================================== -->
+        <div class="section">
+            <h2>📦 Passo 1 — Criar o Array de Objetos</h2>
+
+            <p>
+                Começamos com uma lista de dados. Cada item é um <strong>objeto</strong> com as propriedades que queremos exibir.
+            </p>
+
+            <div class="code-block">
+                <span class="keyword">const</span> <span class="var">listaUsuarios</span> = [<br>
+                &nbsp;&nbsp;{ <span class="prop">nome</span>: <span class="string">"Ana Silva"</span>, <span class="prop">status</span>: <span class="string">"Ativo"</span> },<br>
+                &nbsp;&nbsp;{ <span class="prop">nome</span>: <span class="string">"Carlos Souza"</span>, <span class="prop">status</span>: <span class="string">"Pendente"</span> },<br>
+                &nbsp;&nbsp;{ <span class="prop">nome</span>: <span class="string">"Beatriz Lima"</span>, <span class="prop">status</span>: <span class="string">"Ativo"</span> },<br>
+                &nbsp;&nbsp;{ <span class="prop">nome</span>: <span class="string">"Pedro Costa"</span>, <span class="prop">status</span>: <span class="string">"Inativo"</span> }<br>
+                ];
+            </div>
+
+            <div class="dica">
+                <strong>💡 Lembre-se:</strong> Um array de objetos é uma lista onde cada item tem <strong>chave e valor</strong>.
+                É a estrutura mais comum para representar dados no frontend.
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SEÇÃO 3: SELECIONAR O CONTAINER
+             ========================================== -->
+        <div class="section">
+            <h2>🎯 Passo 2 — Selecionar o Container</h2>
+
+            <p>
+                Precisamos de um elemento HTML onde os cards serão inseridos. Geralmente uma <code>&lt;div&gt;</code> vazia com um ID.
+            </p>
+
+            <div class="code-block">
+                <span class="comment">&lt;!-- HTML --&gt;</span><br>
+                <span class="tag">&lt;div</span> <span class="attr">id</span>=<span class="string">"lista-container"</span><span class="tag">&gt;&lt;/div&gt;</span><br><br>
+
+                <span class="comment">// JavaScript</span><br>
+                <span class="keyword">const</span> <span class="var">container</span> = <span class="func">document</span>.<span class="func">querySelector</span>(<span class="string">"#lista-container"</span>);
+            </div>
+
+            <div class="dica">
+                <strong>💡 Dica:</strong> Use <code>#id</code> para selecionar por ID no <code>querySelector</code>.
+                É a mesma sintaxe do CSS.
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SEÇÃO 4: GERANDO O HTML DINÂMICO
+             ========================================== -->
+        <div class="section">
+            <h2>⚡ Passo 3 — Gerar o HTML Dinamicamente</h2>
+
+            <p>
+                Usamos <code>forEach</code> para percorrer o array e <code>innerHTML</code> para inserir o HTML gerado.
+                Usamos <strong>template strings</strong> (com crase) para interpolar os dados.
+            </p>
+
+            <div class="code-block">
+                <span class="var">listaUsuarios</span>.<span class="func">forEach</span>((<span class="var">user</span>) => {<br>
+                &nbsp;&nbsp;<span class="var">container</span>.<span class="prop">innerHTML</span> += <span class="template">`</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="string">"user-card"</span><span class="tag">&gt;</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tag">&lt;p&gt;</span><span class="template">${user.nome}</span> - <span class="tag">&lt;span&gt;</span><span class="template">${user.status}</span><span class="tag">&lt;/span&gt;&lt;/p&gt;</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="tag">&lt;/div&gt;</span><br>
+                &nbsp;&nbsp;<span class="template">`</span>;<br>
+                });
+            </div>
+
+            <div class="dica">
+                <strong>⚠️ Atenção ao <code>+=</code></strong><br>
+                Usamos <code>innerHTML +=</code> para <strong>adicionar</strong> ao conteúdo existente.
+                Se usar apenas <code>=</code>, você <strong>substitui</strong> tudo a cada iteração — e só o último item aparece!
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SEÇÃO 5: DEMO INTERATIVO
+             ========================================== -->
+        <div class="section">
+            <h2>🎮 Demonstração ao Vivo</h2>
+
+            <p>
+                Os cards abaixo foram gerados automaticamente pelo JavaScript a partir de um array de objetos.
+                Clique nos botões para ver a renderização em ação.
+            </p>
+
+            <div class="demo-box">
+                <h3>👥 Lista de Usuários</h3>
+                <div id="lista-container"></div>
+
+                <div class="botoes">
+                    <button class="btn-acao" onclick="renderizarUsuarios()">🔄 Renderizar</button>
+                    <button class="btn-acao verde" onclick="adicionarUsuario()">➕ Adicionar Usuário</button>
+                    <button class="btn-acao vermelho" onclick="limparLista()">🗑️ Limpar</button>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <span class="comment">// Função que renderiza os usuários</span><br>
+                <span class="keyword">function</span> <span class="func">renderizarUsuarios</span>() {<br>
+                &nbsp;&nbsp;<span class="keyword">const</span> <span class="var">container</span> = <span class="func">document</span>.<span class="func">querySelector</span>(<span class="string">"#lista-container"</span>);<br>
+                &nbsp;&nbsp;<span class="var">container</span>.<span class="prop">innerHTML</span> = <span class="string">""</span>; <span class="comment">// Limpa antes de renderizar</span><br><br>
+
+                &nbsp;&nbsp;<span class="var">listaUsuarios</span>.<span class="func">forEach</span>((<span class="var">user</span>) => {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">const</span> <span class="var">classeStatus</span> = <span class="var">user</span>.<span class="prop">status</span>.<span class="func">toLowerCase</span>();<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="var">container</span>.<span class="prop">innerHTML</span> += <span class="template">`</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="string">"user-card"</span><span class="tag">&gt;</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="string">"nome"</span><span class="tag">&gt;</span><span class="template">${user.nome}</span><span class="tag">&lt;/div&gt;</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tag">&lt;span</span> <span class="attr">class</span>=<span class="string">"status status-${classeStatus}"</span><span class="tag">&gt;</span><span class="template">${user.status}</span><span class="tag">&lt;/span&gt;</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tag">&lt;/div&gt;</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="template">`</span>;<br>
+                &nbsp;&nbsp;});<br>
+                }
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SEÇÃO 6: TABELA DINÂMICA
+             ========================================== -->
+        <div class="section">
+            <h2>📊 Bônus — Tabela Renderizada Dinamicamente</h2>
+
+            <p>
+                O mesmo conceito se aplica a tabelas. Em vez de escrever cada linha, percorremos o array e geramos as linhas.
+            </p>
+
+            <div class="demo-box">
+                <h3>📋 Tabela de Usuários</h3>
+                <table class="tabela-usuarios">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nome</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-body"></tbody>
+                </table>
+            </div>
+
+            <div class="code-block">
+                <span class="keyword">const</span> <span class="var">tbody</span> = <span class="func">document</span>.<span class="func">querySelector</span>(<span class="string">"#tabela-body"</span>);<br><br>
+
+                <span class="var">listaUsuarios</span>.<span class="func">forEach</span>((<span class="var">user</span>, <span class="var">index</span>) => {<br>
+                &nbsp;&nbsp;<span class="var">tbody</span>.<span class="prop">innerHTML</span> += <span class="template">`</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="tag">&lt;tr&gt;</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tag">&lt;td&gt;</span><span class="template">${index + 1}</span><span class="tag">&lt;/td&gt;</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tag">&lt;td&gt;</span><span class="template">${user.nome}</span><span class="tag">&lt;/td&gt;</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tag">&lt;td&gt;</span><span class="template">${user.status}</span><span class="tag">&lt;/td&gt;</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="tag">&lt;/tr&gt;</span><br>
+                &nbsp;&nbsp;<span class="template">`</span>;<br>
+                });
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SEÇÃO 7: EXERCÍCIO
+             ========================================== -->
+        <div class="section">
+            <h2>✍️ Exercício Prático</h2>
+
+            <div class="dica" style="background:#ebf8ff; border-left-color:#4299e1; color:#2b6cb0;">
+                <strong>📝 Mão na massa:</strong><br><br>
+                <ol style="padding-left:20px; margin:0; color:#2b6cb0;">
+                    <li>Crie um array de objetos chamado <code>listaCursos</code> com:
+                        <ul style="margin: 8px 0 8px 20px;">
+                            <li>3 cursos</li>
+                            <li>Cada curso com <code>nome</code> e <code>cargaHoraria</code></li>
+                        </ul>
+                    </li>
+                    <li>No HTML, crie uma <code>&lt;div id="cursos-container"&gt;</code></li>
+                    <li>No <code>script.js</code>, selecione o container com <code>querySelector</code></li>
+                    <li>Use <code>forEach</code> para percorrer o array e gerar um card para cada curso</li>
+                    <li>Cada card deve mostrar o nome e a carga horária</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             RESUMO
+             ========================================== -->
+        <div style="background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:white; padding:30px; border-radius:12px; margin-top:20px;">
+            <h3 style="color:white; margin:0 0 10px;">📌 Resumo da Renderização Dinâmica</h3>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; font-size:14px;">
+                <div>
+                    <strong>Os 3 passos:</strong>
+                    <ul style="list-style:none; padding:0; margin-top:8px;">
+                        <li>• 1️⃣ Criar o <strong>array de objetos</strong></li>
+                        <li>• 2️⃣ Selecionar o <strong>container</strong></li>
+                        <li>• 3️⃣ Percorrer com <code style="background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:4px;">forEach</code> e gerar o HTML</li>
+                    </ul>
+                </div>
+                <div>
+                    <strong>Ferramentas usadas:</strong>
+                    <ul style="list-style:none; padding:0; margin-top:8px;">
+                        <li>• <code style="background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:4px;">querySelector</code> → selecionar</li>
+                        <li>• <code style="background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:4px;">forEach</code> → percorrer</li>
+                        <li>• <code style="background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:4px;">innerHTML +=</code> → inserir</li>
+                        <li>• <code style="background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:4px;">${}</code> → interpolar dados</li>
+                    </ul>
+                </div>
+            </div>
+            <p style="margin-top:15px; opacity:0.9; font-style:italic; border-top:1px solid rgba(255,255,255,0.2); padding-top:15px;">
+                🔄 "Em vez de escrever cada linha da tabela no HTML, usamos JS para gerar o conteúdo a partir de listas de dados."
+            </p>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         SCRIPT DA DEMO
+         ========================================== -->
+    <script>
+        // Array de objetos com dados dos usuários
+        const listaUsuarios = [
+            { nome: "Ana Silva", status: "Ativo" },
+            { nome: "Carlos Souza", status: "Pendente" },
+            { nome: "Beatriz Lima", status: "Ativo" },
+            { nome: "Pedro Costa", status: "Inativo" }
+        ];
+
+        // Função que renderiza os cards de usuários
+        function renderizarUsuarios() {
+            const container = document.querySelector("#lista-container");
+            container.innerHTML = "";
+
+            listaUsuarios.forEach((user) => {
+                const classeStatus = user.status.toLowerCase();
+                container.innerHTML += `
+                    <div class="user-card">
+                        <div class="nome">${user.nome}</div>
+                        <span class="status status-${classeStatus}">${user.status}</span>
+                    </div>
+                `;
+            });
+        }
+
+        // Função que renderiza a tabela
+        function renderizarTabela() {
+            const tbody = document.querySelector("#tabela-body");
+            tbody.innerHTML = "";
+
+            listaUsuarios.forEach((user, index) => {
+                const classeStatus = user.status.toLowerCase();
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${user.nome}</td>
+                        <td><span class="status status-${classeStatus}">${user.status}</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Adicionar novo usuário
+        function adicionarUsuario() {
+            const nomes = ["João Santos", "Maria Oliveira", "Rafael Diniz", "Camila Rocha", "Lucas Almeida"];
+            const status = ["Ativo", "Pendente", "Inativo"];
+
+            const novoNome = nomes[Math.floor(Math.random() * nomes.length)];
+            const novoStatus = status[Math.floor(Math.random() * status.length)];
+
+            listaUsuarios.push({ nome: novoNome, status: novoStatus });
+
+            renderizarUsuarios();
+            renderizarTabela();
+        }
+
+        // Limpar lista
+        function limparLista() {
+            listaUsuarios.length = 0;
+            renderizarUsuarios();
+            renderizarTabela();
+        }
+
+        // Renderiza ao carregar a página
+        renderizarUsuarios();
+        renderizarTabela();
+    </script>
+
+</body>
+</html>

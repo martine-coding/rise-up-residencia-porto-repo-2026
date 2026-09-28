@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aula 4 — O que é o DOM?</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2d3748;
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 40px;
+            font-size: 18px;
+        }
+
+        .subtitle em {
+            color: #667eea;
+            font-style: normal;
+            font-weight: 600;
+        }
+
+        /* ============================================
+           SEÇÕES
+           ============================================ */
+        .section {
+            margin-bottom: 50px;
+            padding: 25px;
+            background: #f7fafc;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .section h2 {
+            color: #2d3748;
+            font-size: 22px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section h2 small {
+            font-size: 14px;
+            color: #718096;
+            font-weight: 400;
+        }
+
+        .section p {
+            color: #4a5568;
+            font-size: 15px;
+            margin-bottom: 12px;
+        }
+
+        /* ============================================
+           CARDS DE CONCEITO
+           ============================================ */
+        .conceito-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .conceito-card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s;
+        }
+
+        .conceito-card:hover {
+            border-color: #667eea;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
+        }
+
+        .conceito-card .icone {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .conceito-card h3 {
+            color: #2d3748;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .conceito-card p {
+            color: #718096;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        /* ============================================
+           ÁRVORE DOM
+           ============================================ */
+        .arvore {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #4a5568;
+            line-height: 2;
+            overflow-x: auto;
+        }
+
+        .arvore .no {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .arvore .html-no { background: #fed7d7; color: #9b2c2c; }
+        .arvore .head-no { background: #fefcbf; color: #744210; }
+        .arvore .body-no { background: #c6f6d5; color: #276749; }
+        .arvore .tag-no  { background: #bee3f8; color: #2c5282; }
+        .arvore .text-no { background: #e9d8fd; color: #553c9a; }
+
+        .arvore .linha {
+            padding-left: 0;
+        }
+
+        .arvore .linha-1 { padding-left: 24px; }
+        .arvore .linha-2 { padding-left: 48px; }
+        .arvore .linha-3 { padding-left: 72px; }
+        .arvore .linha-4 { padding-left: 96px; }
+
+        /* ============================================
+           CÓDIGO
+           ============================================ */
+        .code-block {
+            background: #1a202c;
+            color: #a0aec0;
+            padding: 16px 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 10px 0;
+            line-height: 1.7;
+        }
+
+        .code-block .keyword { color: #f472b6; }
+        .code-block .var { color: #63b3ed; }
+        .code-block .string { color: #68d391; }
+        .code-block .number { color: #f6ad55; }
+        .code-block .comment { color: #718096; }
+        .code-block .func { color: #fbbf24; }
+        .code-block .prop { color: #a78bfa; }
+        .code-block .tag { color: #fc8181; }
+        .code-block .attr { color: #f6ad55; }
+
+        /* ============================================
+           DEMO INTERATIVO
+           ============================================ */
+        .demo-box {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            border: 2px dashed #cbd5e0;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .demo-box #alvo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            transition: all 0.3s;
+        }
+
+        .demo-box button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 4px;
+        }
+
+        .demo-box button:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .demo-box button:active {
+            transform: scale(0.98);
+        }
+
+        /* ============================================
+           DICA
+           ============================================ */
+        .dica {
+            background: #fef3c7;
+            border-left: 4px solid #f6ad55;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin: 16px 0;
+            font-size: 14px;
+            color: #744210;
+        }
+
+        .dica strong {
+            color: #975a16;
+        }
+
+        .dica code {
+            background: rgba(0,0,0,0.08);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        /* ============================================
+           TABELA
+           ============================================ */
+        .tabela-ref {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 14px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .tabela-ref thead {
+            background: #2d3748;
+            color: white;
+        }
+
+        .tabela-ref th,
+        .tabela-ref td {
+            padding: 12px 16px;
+            text-align: left;
+        }
+
+        .tabela-ref tbody tr:nth-child(even) {
+            background: #f7fafc;
+        }
+
+        .tabela-ref tbody tr:hover {
+            background: #ebf8ff;
+        }
+
+        .tabela-ref code {
+            background: #edf2f7;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #2d3748;
+        }
+
+        /* ============================================
+           RESPONSIVO
+           ============================================ */
+        @media (max-width: 768px) {
+            .container { padding: 20px; }
+            h1 { font-size: 24px; }
+            .conceito-grid { grid-template-columns: 1fr; }
+            .arvore { font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🌳 O que é o DOM?</h1>
+        <p class="subtitle">
+            "A partir do DOM é que vamos dar <em>vida</em> à página."
+        </p>
+
+        <!-- ==========================================
+             SEÇÃO 1: CONCEITOS
+             ========================================== -->
+        <div class="section">
+            <h2>🧠 Três Conceitos Fundamentais</h2>
+
+            <div class="conceito-grid">
+                <div class="conceito-card">
+                    <div class="icone">🌳</div>
+                    <h3>A Árvore da Página</h3>
+                    <p>
+                        O DOM é a representação em <strong>árvore</strong> do seu documento HTML dentro da memória do navegador.
+                    </p>
+                </div>
+
+                <div class="conceito-card">
+                    <div class="icone">🌉</div>
+                    <h3>Ponte de Conexão</h3>
+                    <p>
+                        Permite que o JavaScript <strong>leia, altere, adicione ou remova</strong> elementos HTML e estilos CSS em tempo real.
+                    </p>
+                </div>
+
+                <div class="conceito-card">
+                    <div class="icone">⚡</div>
+                    <h3>Do Estático ao Vivo</h3>
+                    <p>
+                        Sem o DOM, o HTML seria apenas um documento <strong>fixo</strong>, sem capacidade de resposta às ações do usuário.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SEÇÃO 2: ÁRVORE DOM
+             ========================================== -->
+        <div class="section">
+            <h2>🌳 A Árvore do DOM <small>Representação visual</small></h2>
+
+            <p>
+                Quando o navegador carrega um HTML, ele cria uma <strong>árvore de objetos</strong> na memória.
+                Cada tag se torna um nó (node) dessa árvore.
+            </p>
+
+            <div class="arvore">
+                <div class="linha">
+                    <span class="no html-no">document</span>
+                </div>
+                <div class="linha linha-1">
+                    └── <span class="no html-no">&lt;html&gt;</span>
+                </div>
+                <div class="linha linha-2">
+                    ├── <span class="no head-no">&lt;head&gt;</span>
+                </div>
+                <div class="linha linha-3">
+                    │   ├── <span class="no tag-no">&lt;meta&gt;</span>
+                </div>
+                <div class="linha linha-3">
+                    │   └── <span class="no tag-no">&lt;title&gt;</span>
+                </div>
+                <div class="linha linha-4">
+                    │       └── <span class="no text-no">"Minha Página"</span>
+                </div>
+                <div class="linha linha-2">
+                    └── <span class="no body-no">&lt;body&gt;</span>
+                </div>
+                <div class="linha linha-3">
+                    ├── <span class="no tag-no">&lt;header&gt;</span>
+                </div>
+                <div class="linha linha-4">
+                    │   └── <span class="no tag-no">&lt;h1&gt;</span>
+                </div>
+                <div class="linha linha-4" style="padding-left:120px;">
+                │       └── <span class="no text-no">"Olá, mundo!"</span>
+                </div>
+                <div class="linha linha-3">
+                    └── <span class="no tag-no">&lt;p&gt;</span>
+                </div>
+                <div class="linha linha-4">
+                    &nbsp;&nbsp;&nbsp;&nbsp;└── <span class="no text-no">"Bem-vindo"</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SEÇÃO 3: ACESSANDO O DOM
+             ========================================== -->
+        <div class="section">
+            <h2>🔍 Como Acessar o DOM <small>Seletores do JavaScript</small></h2>
+
+            <p>
+                Para manipular o DOM, primeiro precisamos <strong>selecionar</strong> os elementos.
+                Existem várias formas:
+            </p>
+
+            <table class="tabela-ref">
+                <thead>
+                    <tr>
+                        <th>Método</th>
+                        <th>O que faz</th>
+                        <th>Exemplo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>getElementById()</code></td>
+                        <td>Seleciona por ID</td>
+                        <td><code>document.getElementById("alvo")</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>querySelector()</code></td>
+                        <td>Seleciona o primeiro elemento (CSS selector)</td>
+                        <td><code>document.querySelector(".classe")</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>querySelectorAll()</code></td>
+                        <td>Seleciona todos os elementos</td>
+                        <td><code>document.querySelectorAll("p")</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>getElementsByClassName()</code></td>
+                        <td>Seleciona por classe</td>
+                        <td><code>document.getElementsByClassName("item")</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="code-block">
+                <span class="comment">// Selecionando um elemento pelo ID</span><br>
+                <span class="keyword">let</span> <span class="var">titulo</span> = <span class="func">document</span>.<span class="func">getElementById</span>(<span class="string">"alvo"</span>);<br><br>
+                <span class="comment">// Selecionando pelo seletor CSS</span><br>
+                <span class="keyword">let</span> <span class="var">paragrafo</span> = <span class="func">document</span>.<span class="func">querySelector</span>(<span class="string">"p"</span>);<br><br>
+                <span class="comment">// Selecionando todos os parágrafos</span><br>
+                <span class="keyword">let</span> <span class="var">todos</span> = <span class="func">document</span>.<span class="func">querySelectorAll</span>(<span class="string">"p"</span>);
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SEÇÃO 4: MANIPULANDO O DOM
+             ========================================== -->
+        <div class="section">
+            <h2>✏️ Manipulando o DOM <small>Lendo, alterando e criando</small></h2>
+
+            <table class="tabela-ref">
+                <thead>
+                    <tr>
+                        <th>Ação</th>
+                        <th>Propriedade / Método</th>
+                        <th>Exemplo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Ler texto</td>
+                        <td><code>textContent</code></td>
+                        <td><code>el.textContent</code></td>
+                    </tr>
+                    <tr>
+                        <td>Alterar texto</td>
+                        <td><code>textContent</code></td>
+                        <td><code>el.textContent = "Novo"</code></td>
+                    </tr>
+                    <tr>
+                        <td>Alterar HTML</td>
+                        <td><code>innerHTML</code></td>
+                        <td><code>el.innerHTML = "&lt;b&gt;Oi&lt;/b&gt;"</code></td>
+                    </tr>
+                    <tr>
+                        <td>Alterar estilo</td>
+                        <td><code>style</code></td>
+                        <td><code>el.style.color = "red"</code></td>
+                    </tr>
+                    <tr>
+                        <td>Adicionar classe</td>
+                        <td><code>classList.add()</code></td>
+                        <td><code>el.classList.add("ativo")</code></td>
+                    </tr>
+                    <tr>
+                        <td>Remover classe</td>
+                        <td><code>classList.remove()</code></td>
+                        <td><code>el.classList.remove("ativo")</code></td>
+                    </tr>
+                    <tr>
+                        <td>Criar elemento</td>
+                        <td><code>createElement()</code></td>
+                        <td><code>document.createElement("p")</code></td>
+                    </tr>
+                    <tr>
+                        <td>Adicionar ao DOM</td>
+                        <td><code>appendChild()</code></td>
+                        <td><code>pai.appendChild(filho)</code></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ==========================================
+             SEÇÃO 5: DEMO INTERATIVO
+             ========================================== -->
+        <div class="section">
+            <h2>🎮 Demonstração ao Vivo <small>Clique nos botões</small></h2>
+
+            <p>
+                Este é um exemplo real de manipulação do DOM. Os botões abaixo alteram o elemento com ID <code>alvo</code>.
+            </p>
+
+            <div class="demo-box">
+                <div id="alvo">🎯 Eu sou o alvo!</div>
+
+                <button onclick="mudarTexto()">✏️ Mudar Texto</button>
+                <button onclick="mudarCor()">🎨 Mudar Cor</button>
+                <button onclick="mudarFundo()">🖌️ Mudar Fundo</button>
+                <button onclick="resetar()">🔄 Resetar</button>
+            </div>
+
+            <div class="code-block">
+                <span class="comment">// Mudar o texto do elemento</span><br>
+                <span class="keyword">function</span> <span class="func">mudarTexto</span>() {<br>
+                &nbsp;&nbsp;<span class="keyword">let</span> <span class="var">el</span> = <span class="func">document</span>.<span class="func">getElementById</span>(<span class="string">"alvo"</span>);<br>
+                &nbsp;&nbsp;<span class="var">el</span>.<span class="prop">textContent</span> = <span class="string">"✨ Texto alterado pelo JavaScript!"</span>;<br>
+                }<br><br>
+
+                <span class="comment">// Mudar a cor do texto</span><br>
+                <span class="keyword">function</span> <span class="func">mudarCor</span>() {<br>
+                &nbsp;&nbsp;<span class="keyword">let</span> <span class="var">el</span> = <span class="func">document</span>.<span class="func">getElementById</span>(<span class="string">"alvo"</span>);<br>
+                &nbsp;&nbsp;<span class="var">el</span>.<span class="prop">style</span>.<span class="prop">color</span> = <span class="string">"#E83F6F"</span>;<br>
+                }<br><br>
+
+                <span class="comment">// Mudar a cor de fundo</span><br>
+                <span class="keyword">function</span> <span class="func">mudarFundo</span>() {<br>
+                &nbsp;&nbsp;<span class="keyword">let</span> <span class="var">el</span> = <span class="func">document</span>.<span class="func">getElementById</span>(<span class="string">"alvo"</span>);<br>
+                &nbsp;&nbsp;<span class="var">el</span>.<span class="prop">style</span>.<span class="prop">background</span> = <span class="string">"#FEF3C7"</span>;<br>
+                }<br><br>
+
+                <span class="comment">// Resetar tudo</span><br>
+                <span class="keyword">function</span> <span class="func">resetar</span>() {<br>
+                &nbsp;&nbsp;<span class="keyword">let</span> <span class="var">el</span> = <span class="func">document</span>.<span class="func">getElementById</span>(<span class="string">"alvo"</span>);<br>
+                &nbsp;&nbsp;<span class="var">el</span>.<span class="prop">textContent</span> = <span class="string">"🎯 Eu sou o alvo!"</span>;<br>
+                &nbsp;&nbsp;<span class="var">el</span>.<span class="prop">style</span>.<span class="prop">color</span> = <span class="string">"#667eea"</span>;<br>
+                &nbsp;&nbsp;<span class="var">el</span>.<span class="prop">style</span>.<span class="prop">background</span> = <span class="string">"#f7fafc"</span>;<br>
+                }
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SEÇÃO 6: DO ESTÁTICO AO VIVO
+             ========================================== -->
+        <div class="section">
+            <h2>⚡ Do Estático ao Vivo <small>Por que o DOM importa?</small></h2>
+
+            <div class="conceito-grid">
+                <div class="conceito-card">
+                    <div class="icone">📄</div>
+                    <h3>Sem DOM</h3>
+                    <p>
+                        HTML é só um documento <strong>fixo</strong>. Não reage a cliques, não muda textos, não cria elementos.
+                    </p>
+                </div>
+
+                <div class="conceito-card">
+                    <div class="icone">⚡</div>
+                    <h3>Com DOM</h3>
+                    <p>
+                        A página se torna <strong>viva</strong>. Reage a ações, atualiza conteúdos, cria e remove elementos dinamicamente.
+                    </p>
+                </div>
+            </div>
+
+            <div class="dica">
+                <strong>💡 Lembre-se:</strong> O DOM é a ponte entre o HTML e o JavaScript.
+                Sem ele, não há interatividade, não há resposta ao usuário, não há vida.
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SEÇÃO 7: EXERCÍCIO
+             ========================================== -->
+        <div class="section">
+            <h2>✍️ Exercício Prático</h2>
+
+            <div class="dica" style="background:#ebf8ff; border-left-color:#4299e1; color:#2b6cb0;">
+                <strong>📝 Mão na massa:</strong><br><br>
+                <ol style="padding-left:20px; margin:0; color:#2b6cb0;">
+                    <li>Crie um HTML com um <code>&lt;h1 id="titulo"&gt;</code> e um <code>&lt;button&gt;</code></li>
+                    <li>No <code>script.js</code>, selecione o título com <code>getElementById</code></li>
+                    <li>Adicione um evento de clique no botão</li>
+                    <li>Ao clicar, altere o texto do título com <code>textContent</code></li>
+                    <li>Bônus: altere também a cor do título com <code>style.color</code></li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             RESUMO
+             ========================================== -->
+        <div style="background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:white; padding:30px; border-radius:12px; margin-top:20px;">
+            <h3 style="color:white; margin:0 0 10px;">📌 Resumo do DOM</h3>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; font-size:14px;">
+                <div>
+                    <strong>O que é:</strong>
+                    <ul style="list-style:none; padding:0; margin-top:8px;">
+                        <li>• Representação em árvore do HTML</li>
+                        <li>• Ponte entre HTML e JavaScript</li>
+                        <li>• Permite leitura e manipulação em tempo real</li>
+                    </ul>
+                </div>
+                <div>
+                    <strong>Como usar:</strong>
+                    <ul style="list-style:none; padding:0; margin-top:8px;">
+                        <li>• <code style="background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:4px;">getElementById</code> → seleciona por ID</li>
+                        <li>• <code style="background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:4px;">querySelector</code> → seletor CSS</li>
+                        <li>• <code style="background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:4px;">textContent</code> → ler/alterar texto</li>
+                        <li>• <code style="background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:4px;">style</code> → alterar CSS</li>
+                        <li>• <code style="background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:4px;">classList</code> → adicionar/remover classes</li>
+                    </ul>
+                </div>
+            </div>
+            <p style="margin-top:15px; opacity:0.9; font-style:italic; border-top:1px solid rgba(255,255,255,0.2); padding-top:15px;">
+                🌳 "A partir do DOM é que vamos dar vida à página."
+            </p>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         SCRIPT DA DEMO
+         ========================================== -->
+    <script>
+        function mudarTexto() {
+            let el = document.getElementById("alvo");
+            el.textContent = "✨ Texto alterado pelo JavaScript!";
+        }
+
+        function mudarCor() {
+            let el = document.getElementById("alvo");
+            el.style.color = "#E83F6F";
+        }
+
+        function mudarFundo() {
+            let el = document.getElementById("alvo");
+            el.style.background = "#FEF3C7";
+        }
+
+        function resetar() {
+            let el = document.getElementById("alvo");
+            el.textContent = "🎯 Eu sou o alvo!";
+            el.style.color = "#667eea";
+            el.style.background = "#f7fafc";
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aula 4 — Selecionando Elementos HTML</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2d3748;
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 40px;
+            font-size: 18px;
+        }
+
+        .subtitle em {
+            color: #667eea;
+            font-style: normal;
+            font-weight: 600;
+        }
+
+        /* ============================================
+           SEÇÕES
+           ============================================ */
+        .section {
+            margin-bottom: 50px;
+            padding: 25px;
+            background: #f7fafc;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .section h2 {
+            color: #2d3748;
+            font-size: 22px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section h2 small {
+            font-size: 14px;
+            color: #718096;
+            font-weight: 400;
+        }
+
+        .section p {
+            color: #4a5568;
+            font-size: 15px;
+            margin-bottom: 12px;
+        }
+
+        /* ============================================
+           MÉTODOS DE SELEÇÃO
+           ============================================ */
+        .metodos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .metodo-card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s;
+        }
+
+        .metodo-card:hover {
+            border-color: #667eea;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
+        }
+
+        .metodo-card .badge-metodo {
+            display: inline-block;
+            background: #ebf8ff;
+            color: #2b6cb0;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 12px;
+        }
+
+        .metodo-card h3 {
+            color: #2d3748;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .metodo-card p {
+            color: #718096;
+            font-size: 14px;
+            margin: 0 0 12px 0;
+        }
+
+        .metodo-card .retorno {
+            font-size: 13px;
+            color: #4a5568;
+            background: #f7fafc;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* ============================================
+           CÓDIGO
+           ============================================ */
+        .code-block {
+            background: #1a202c;
+            color: #a0aec0;
+            padding: 16px 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 10px 0;
+            line-height: 1.7;
+        }
+
+        .code-block .keyword { color: #f472b6; }
+        .code-block .var { color: #63b3ed; }
+        .code-block .string { color: #68d391; }
+        .code-block .number { color: #f6ad55; }
+        .code-block .comment { color: #718096; }
+        .code-block .func { color: #fbbf24; }
+        .code-block .prop { color: #a78bfa; }
+
+        /* ============================================
+           DEMO INTERATIVO
+           ============================================ */
+        .demo-box {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            border: 2px dashed #cbd5e0;
+            margin: 20px 0;
+        }
+
+        .dashboard-demo {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .card-metrica {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .card-metrica:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .card-metrica .numero {
+            font-size: 28px;
+            font-weight: 700;
+            display: block;
+        }
+
+        .card-metrica .label {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        #titulo-dashboard {
+            text-align: center;
+            color: #2d3748;
+            font-size: 20px;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: #f7fafc;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .demo-box .botoes {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn-acao {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-acao:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .btn-acao:active {
+            transform: scale(0.98);
+        }
+
+        /* ============================================
+           TABELA
+           ============================================ */
+        .tabela-ref {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 14px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .tabela-ref thead {
+            background: #2d3748;
+            color: white;
+        }
+
+        .tabela-ref th,
+        .tabela-ref td {
+            padding: 12px 16px;
+            text-align: left;
+        }
+
+        .tabela-ref tbody tr:nth-child(even) {
+            background: #f7fafc;
+        }
+
+        .tabela-ref tbody tr:hover {
+            background: #ebf8ff;
+        }
+
+        .tabela-ref code {
+            background: #edf2f7;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #2d3748;
+        }
+
+        /* ============================================
+           DICA
+           ============================================ */
+        .dica {
+            background: #fef3c7;
+            border-left: 4px solid #f6ad55;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin: 16px 0;
+            font-size: 14px;
+            color: #744210;
+        }
+
+        .dica strong {
+            color: #975a16;
+        }
+
+        .dica code {
+            background: rgba(0,0,0,0.08);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        /* ============================================
+           RESPONSIVO
+           ============================================ */
+        @media (max-width: 768px) {
+            .container { padding: 20px; }
+            h1 { font-size: 24px; }
+            .metodos-grid { grid-template-columns: 1fr; }
+            .dashboard-demo { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🔍 Selecionando Elementos HTML</h1>
+        <p class="subtitle">
+            "Para alterar algo na tela, o JS precisa primeiro <em>encontrar</em> o elemento correto."
+        </p>
+
+        <!-- ==========================================
+             SEÇÃO 1: POR QUE SELECIONAR?
+             ========================================== -->
+        <div class="section">
+            <h2>🎯 Por que Selecionar? <small>O primeiro passo da manipulação</small></h2>
+
+            <p>
+                O JavaScript não consegue alterar um elemento se não souber <strong>qual</strong> elemento é.
+                Por isso, o primeiro passo de qualquer manipulação do DOM é <strong>selecionar</strong> o elemento.
+            </p>
+
+            <div class="code-block">
+                <span class="comment">// ❌ Errado — não dá pra alterar sem selecionar</span><br>
+                <span class="comment">// "muda o título" — mas qual título?</span><br><br>
+
+                <span class="comment">// ✅ Certo — primeiro seleciona, depois altera</span><br>
+                <span class="keyword">const</span> <span class="var">titulo</span> = <span class="func">document</span>.<span class="func">getElementById</span>(<span class="string">"titulo-dashboard"</span>);<br>
+                <span class="var">titulo</span>.<span class="prop">textContent</span> = <span class="string">"Novo título!"</span>;
+            </div>
+
+            <div class="dica">
+                <strong>💡 Regra de ouro:</strong> <em>Selecionar → Manipular</em>. Sempre nessa ordem.
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SEÇÃO 2: MÉTODOS DE SELEÇÃO
+             ========================================== -->
+        <div class="section">
+            <h2>🛠️ Os 4 Métodos Principais</h2>
+
+            <div class="metodos-grid">
+
+                <div class="metodo-card">
+                    <span class="badge-metodo">getElementById</span>
+                    <h3>Por ID</h3>
+                    <p>Seleciona <strong>1 elemento</strong> pelo atributo <code>id</code>.</p>
+                    <div class="retorno">
+                        Retorna: <strong>1 elemento</strong><br>
+                        Ex: <code>getElementById("titulo")</code>
+                    </div>
+                </div>
+
+                <div class="metodo-card">
+                    <span class="badge-metodo">querySelector</span>
+                    <h3>Por Seletor CSS</h3>
+                    <p>Seleciona o <strong>primeiro</strong> elemento que bate com o seletor.</p>
+                    <div class="retorno">
+                        Retorna: <strong>1 elemento</strong><br>
+                        Ex: <code>querySelector(".card")</code>
+                    </div>
+                </div>
+
+                <div class="metodo-card">
+                    <span class="badge-metodo">querySelectorAll</span>
+                    <h3>Todos por Seletor</h3>
+                    <p>Seleciona <strong>todos</strong> os elementos que batem com o seletor.</p>
+                    <div class="retorno">
+                        Retorna: <strong>NodeList</strong><br>
+                        Ex: <code>querySelectorAll(".btn")</code>
+                    </div>
+                </div>
+
+                <div class="metodo-card">
+                    <span class="badge-metodo">getElementsByClassName</span>
+                    <h3>Por Classe</h3>
+                    <p>Seleciona todos os elementos com determinada classe.</p>
+                    <div class="retorno">
+                        Retorna: <strong>HTMLCollection</strong><br>
+                        Ex: <code>getElementsByClassName("item")</code>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SEÇÃO 3: EXEMPLOS DE CÓDIGO
+             ========================================== -->
+        <div class="section">
+            <h2>💻 Exemplos Práticos</h2>
+
+            <p><strong>1. Selecionar por ID</strong></p>
+            <div class="code-block">
+                <span class="keyword">const</span> <span class="var">titulo</span> = <span class="func">document</span>.<span class="func">getElementById</span>(<span class="string">"titulo-dashboard"</span>);
+            </div>
+
+            <p><strong>2. Selecionar por seletor CSS (mais comum)</strong></p>
+            <div class="code-block">
+                <span class="keyword">const</span> <span class="var">card</span> = <span class="func">document</span>.<span class="func">querySelector</span>(<span class="string">".card-metrica"</span>);<br>
+                <span class="keyword">const</span> <span class="var">todosOsBotoes</span> = <span class="func">document</span>.<span class="func">querySelectorAll</span>(<span class="string">".btn-acao"</span>);
+            </div>
+
+            <p><strong>3. Manipulando o que foi selecionado</strong></p>
+            <div class="code-block">
+                <span class="comment">// Alterando o texto do título</span><br>
+                <span class="var">titulo</span>.<span class="prop">textContent</span> = <span class="string">"Dashboard Atualizado"</span>;<br><br>
+
+                <span class="comment">// Percorrendo todos os botões</span><br>
+                <span class="var">todosOsBotoes</span>.<span class="func">forEach</span>((<span class="var">botao</span>) => {<br>
+                &nbsp;&nbsp;<span class="var">botao</span>.<span class="prop">style</span>.<span class="prop">background</span> = <span class="string">"#48bb78"</span>;<br>
+                });
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SEÇÃO 4: DEMO INTERATIVO
+             ========================================== -->
+        <div class="section">
+            <h2>🎮 Demonstração ao Vivo <small>Clique nos botões</small></h2>
+
+            <p>
+                Este é um exemplo real de seleção + manipulação do DOM.
+                Os botões abaixo usam <code>getElementById</code> e <code>querySelectorAll</code>.
+            </p>
+
+            <div class="demo-box">
+                <h3 id="titulo-dashboard">📊 Dashboard do Aluno</h3>
+
+                <div class="dashboard-demo">
+                    <div class="card-metrica">
+                        <span class="numero">12</span>
+                        <div class="label">Cursos</div>
+                    </div>
+                    <div class="card-metrica">
+                        <span class="numero">5</span>
+                        <div class="label">Metas</div>
+                    </div>
+                    <div class="card-metrica">
+                        <span class="numero">8</span>
+                        <div class="label">Badges</div>
+                    </div>
+                </div>
+
+                <div class="botoes">
+                    <button class="btn-acao" onclick="selecionarTitulo()">🔍 getElementById</button>
+                    <button class="btn-acao" onclick="selecionarCards()">🔍 querySelectorAll</button>
+                    <button class="btn-acao" onclick="resetarDemo()">🔄 Resetar</button>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <span class="comment">// Selecionar o título por ID</span><br>
+                <span class="keyword">function</span> <span class="func">selecionarTitulo</span>() {<br>
+                &nbsp;&nbsp;<span class="keyword">const</span> <span class="var">titulo</span> = <span class="func">document</span>.<span class="func">getElementById</span>(<span class="string">"titulo-dashboard"</span>);<br>
+                &nbsp;&nbsp;<span class="var">titulo</span>.<span class="prop">textContent</span> = <span class="string">"✨ Título selecionado por ID!"</span>;<br>
+                &nbsp;&nbsp;<span class="var">titulo</span>.<span class="prop">style</span>.<span class="prop">color</span> = <span class="string">"#667eea"</span>;<br>
+                }<br><br>
+
+                <span class="comment">// Selecionar todos os cards por classe</span><br>
+                <span class="keyword">function</span> <span class="func">selecionarCards</span>() {<br>
+                &nbsp;&nbsp;<span class="keyword">const</span> <span class="var">cards</span> = <span class="func">document</span>.<span class="func">querySelectorAll</span>(<span class="string">".card-metrica"</span>);<br>
+                &nbsp;&nbsp;<span class="var">cards</span>.<span class="func">forEach</span>((<span class="var">card</span>) => {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="var">card</span>.<span class="prop">style</span>.<span class="prop">background</span> = <span class="string">"linear-gradient(135deg, #48bb78, #38a169)"</span>;<br>
+                &nbsp;&nbsp;});<br>
+                }
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SEÇÃO 5: QUANDO USAR CADA UM?
+             ========================================== -->
+        <div class="section">
+            <h2>🤔 Quando usar cada método?</h2>
+
+            <table class="tabela-ref">
+                <thead>
+                    <tr>
+                        <th>Situação</th>
+                        <th>Método ideal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Preciso alterar um elemento único (ex: um título)</td>
+                        <td><code>getElementById</code></td>
+                    </tr>
+                    <tr>
+                        <td>Preciso do primeiro elemento que bate com um seletor CSS</td>
+                        <td><code>querySelector</code></td>
+                    </tr>
+                    <tr>
+                        <td>Preciso de todos os elementos de uma classe</td>
+                        <td><code>querySelectorAll</code></td>
+                    </tr>
+                    <tr>
+                        <td>Quero usar seletores CSS complexos (ex: <code>.card &gt; p</code>)</td>
+                        <td><code>querySelector</code> / <code>querySelectorAll</code></td>
+                    </tr>
+                    <tr>
+                        <td>Quero percorrer vários elementos com <code>forEach</code></td>
+                        <td><code>querySelectorAll</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="dica">
+                <strong>💡 Dica prática:</strong> Na dúvida, use <code>querySelector</code> e <code>querySelectorAll</code>.
+                Eles aceitam <strong>qualquer seletor CSS</strong>, o que dá muito mais flexibilidade.
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SEÇÃO 6: EXERCÍCIO
+             ========================================== -->
+        <div class="section">
+            <h2>✍️ Exercício Prático</h2>
+
+            <div class="dica" style="background:#ebf8ff; border-left-color:#4299e1; color:#2b6cb0;">
+                <strong>📝 Mão na massa:</strong><br><br>
+                <ol style="padding-left:20px; margin:0; color:#2b6cb0;">
+                    <li>Crie um HTML com:
+                        <ul style="margin: 8px 0 8px 20px;">
+                            <li>Um <code>&lt;h1 id="titulo"&gt;</code></li>
+                            <li>Três <code>&lt;div class="card"&gt;</code></li>
+                            <li>Dois <code>&lt;button class="btn"&gt;</code></li>
+                        </ul>
+                    </li>
+                    <li>No <code>script.js</code>, selecione o <code>h1</code> com <code>getElementById</code></li>
+                    <li>Selecione os cards com <code>querySelectorAll(".card")</code></li>
+                    <li>Selecione os botões com <code>querySelectorAll(".btn")</code></li>
+                    <li>Use <code>forEach</code> para percorrer os cards e alterar o texto</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             RESUMO
+             ========================================== -->
+        <div style="background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:white; padding:30px; border-radius:12px; margin-top:20px;">
+            <h3 style="color:white; margin:0 0 10px;">📌 Resumo da Seleção</h3>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; font-size:14px;">
+                <div>
+                    <strong>Métodos:</strong>
+                    <ul style="list-style:none; padding:0; margin-top:8px;">
+                        <li>• <code style="background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:4px;">getElementById</code> → 1 elemento por ID</li>
+                        <li>• <code style="background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:4px;">querySelector</code> → 1 elemento por seletor</li>
+                        <li>• <code style="background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:4px;">querySelectorAll</code> → todos por seletor</li>
+                        <li>• <code style="background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:4px;">getElementsByClassName</code> → todos por classe</li>
+                    </ul>
+                </div>
+                <div>
+                    <strong>Ordem de uso:</strong>
+                    <ul style="list-style:none; padding:0; margin-top:8px;">
+                        <li>• 1️⃣ <strong>Selecionar</strong> o elemento</li>
+                        <li>• 2️⃣ <strong>Manipular</strong> (texto, estilo, classe)</li>
+                        <li>• 3️⃣ <strong>Reagir</strong> a eventos</li>
+                    </ul>
+                    <br>
+                    <strong>Regra de ouro:</strong>
+                    <p style="margin-top:8px; opacity:0.9;">
+                        Sempre <strong>selecionar</strong> antes de <strong>manipular</strong>.
+                    </p>
+                </div>
+            </div>
+            <p style="margin-top:15px; opacity:0.9; font-style:italic; border-top:1px solid rgba(255,255,255,0.2); padding-top:15px;">
+                🔍 "Para alterar algo na tela, o JS precisa primeiro encontrar o elemento correto."
+            </p>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         SCRIPT DA DEMO
+         ========================================== -->
+    <script>
+        function selecionarTitulo() {
+            const titulo = document.getElementById("titulo-dashboard");
+            titulo.textContent = "✨ Título selecionado por ID!";
+            titulo.style.color = "#667eea";
+            titulo.style.fontWeight = "700";
+        }
+
+        function selecionarCards() {
+            const cards = document.querySelectorAll(".card-metrica");
+            cards.forEach((card) => {
+                card.style.background = "linear-gradient(135deg, #48bb78, #38a169)";
+                card.style.transform = "scale(1.05)";
+            });
+        }
+
+        function resetarDemo() {
+            const titulo = document.getElementById("titulo-dashboard");
+            titulo.textContent = "📊 Dashboard do Aluno";
+            titulo.style.color = "#2d3748";
+            titulo.style.fontWeight = "normal";
+
+            const cards = document.querySelectorAll(".card-metrica");
+            cards.forEach((card) => {
+                card.style.background = "linear-gradient(135deg, #667eea, #764ba2)";
+                card.style.transform = "scale(1)";
+            });
+        }
+    </script>
+
+</body>
+</html>
