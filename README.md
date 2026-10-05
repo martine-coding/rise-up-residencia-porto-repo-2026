@@ -1,4 +1,4 @@
-# 🚀 Martine Coding · Rise Up 2026
+# 🚀 Martine Coding · Rise Up 2026 - qualquer coisa literalmente
 
 Repositório oficial da **Martine Coding** para as aulas e desafios implementados no **Rise Up 2026**, em parceria com o **Porto Digital**, no programa de residência tecnológica.
 ---
